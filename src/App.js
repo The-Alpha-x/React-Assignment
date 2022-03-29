@@ -7,12 +7,15 @@ import Thumbnail from "./components/Thumbnail";
 import Sidebar from "./components/Siderbar";
 import { ItemActions } from "./redux/actions/ItemActions";
 import { Container, Row, Col, Dropdown} from "react-bootstrap";
+// import { UncontrolledButtonDropdown, DropdownItem,DropdownMenu,DropdownToggle} from 'reactstrap';
 
 class App extends Component {
   state = {
-    items: null,
+    items: [],
     filteredItems: [],
+    isFiltered: false,
     cart: [],
+    orderBy: 'all'
   };
 
   componentDidMount() {
@@ -27,6 +30,7 @@ class App extends Component {
             items: items.items.data,
             loading: false,
           });
+          console.log(items.items.data)
         }
       }
     });
@@ -48,6 +52,26 @@ class App extends Component {
     });
   };
 
+  orderByCategory = (type) => {
+    var sizeArr = [];
+    if(type === 'all'){
+      sizeArr = this.state.items;
+    }else{
+      this.state.items.map((item) => {
+        if(item.details.type  === type){
+          sizeArr.push(item)
+        }
+      })
+    }
+    
+    this.setState({
+      orderBy: type,
+      isFiltered: true,
+      filteredItems: sizeArr
+    });
+    console.log(type)
+  };
+
   filterSize = (size) => {
     var sizeArr = [];
     this.state.items.map((item)=>{
@@ -56,7 +80,8 @@ class App extends Component {
       }
     })
     this.setState({
-      filteredItems: sizeArr
+      filteredItems: sizeArr,
+      isFiltered: true
     });
   };
 
@@ -79,12 +104,26 @@ class App extends Component {
               />
             </Col>
             <Col xs={9}>
-            <div class="d-flex justify-content-end" style={{marginRight:"20%"}}>
-            <Dropdown options={options} onChange={this._onSelect} placeholder="Select an option" />;
+              
+            <p>{this.state.isFiltered === true ? this.state.filteredItems.length : this.state.items.length } item(s) found</p>
+            <div class="d-flex justify-content-end" style={{marginRight:"10%"}}>
+            
+            <Dropdown>Order By {" "}
+            <Dropdown.Toggle variant="light" id="dropdown-basic">
+              {(this.state.orderBy)}
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={()=>this.orderByCategory("all")}>All</Dropdown.Item>
+              <Dropdown.Item onClick={()=>this.orderByCategory("t-shirt")} >Tshirts</Dropdown.Item>
+              <Dropdown.Item onClick={()=>this.orderByCategory("dress shirts")}>Dress Shirts</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown> 
                 </div>
+              
               <Container>
                 <Row xs={3} >
-                  {this.state.filteredItems.length !== 0 ? (
+                  {this.state.isFiltered === true ? (
                     this.state.filteredItems.map((item) => {
                       return (
                         <div style={{marginBottom:10}}>

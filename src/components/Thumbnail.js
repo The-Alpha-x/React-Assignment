@@ -5,6 +5,10 @@ export default class Thumbnail extends Component {
   
   render() {  
     var decimal =  (this.props.details.price+"").split(".")[1];
+    if(decimal === undefined){
+      decimal = "00";
+    }
+    
     return (
       <div style={{marginBottom:5}}>
             <div style={{display: 'flex', alignItems: 'flex-end', flexDirection: 'column'}}>
@@ -22,7 +26,7 @@ export default class Thumbnail extends Component {
           <div className="underline">    </div>
 
           <p>
-            $<b style={{fontSize: 25}}>{Math.floor(this.props.details.price)}.</b>{decimal}
+            $<b style={{fontSize: 25}}>{Math.floor((this.props.details.price).toFixed(2))}.</b>{decimal}
           </p>
           <p>or 9 x $1.21</p>
           <Button style={{width:'100%'}} variant="dark" onClick={()=>this.props.addItemstoCart(this.props.item)}>Add to Cart</Button>         
